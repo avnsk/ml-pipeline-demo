@@ -1,6 +1,8 @@
 from data.loader import load_csv
-from data.cleaner import validate_dataset, clean_dataset
+from data.cleaner import validate_dataset, fill_missing
 from data.split import train_test_split
+from data.split import train_test_split
+from features.scaler import fit_transform
 
 
 class Pipeline:
@@ -8,21 +10,23 @@ class Pipeline:
         self.data_path = data_path
         self.target_col = target_col
 
-    def run(self):
+    def run(self, test_size=0.2):
         # Load
         df = load_csv(self.data_path)
         validate_dataset(df, self.target_col)
 
         # Clean
-        df = clean_dataset(df)
+        df = fill_missing(df)
 
-        # Split
         X = df.drop(self.target_col, axis=1).values
         y = df[self.target_col].values.reshape(-1, 1)
-        X_train, X_test, y_train, y_test = train_test_split(X, y)
+        X_scaled, means, stds = fit_transform(X)
 
+        X_train, X_test, y_train, y_test = train_test_split(
+            X_scaled, y, test_size=test_size
+        )
         print("Pipeline run successful!")
         print(f"Train shape: X={X_train.shape}, y={y_train.shape}")
         print(f"Test shape:  X={X_test.shape}, y={y_test.shape}")
 
-        return X_train, X_test, y_train, y_test
+        return X_train, X_test, y_train, y_test, means, stds

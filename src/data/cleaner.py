@@ -9,13 +9,19 @@ def validate_dataset(df: pd.DataFrame, target_col: str):
         raise ValueError("Dataset must contain at least one feature column.")
 
 
-def clean_dataset(df: pd.DataFrame):
-    # fills the null row with mean for numneric
-    # and mode for categorical.
+def fill_missing(df: pd.DataFrame, numeric_strategy="mean"):
     df = df.copy()
     for col in df.columns:
         if df[col].dtype.kind in "biufc":
-            df[col] = df[col].fillna(df[col].mean())
+            if numeric_strategy == "mean":
+                df[col] = df[col].fillna(df[col].mean())
+            elif numeric_strategy == "median":
+                df[col] = df[col].fillna(df[col].median())
+            elif numeric_strategy == "zero":
+                df[col] = df[col].fillna(0)
+            else:
+                raise ValueError("Unknown numeric missing value strategy")
         else:
+            # categorical → mode
             df[col] = df[col].fillna(df[col].mode()[0])
     return df
