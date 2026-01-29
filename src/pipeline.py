@@ -3,6 +3,7 @@ from data.cleaner import validate_dataset, fill_missing
 from data.split import train_test_split
 from data.split import train_test_split
 from features.scaler import fit_transform
+from features.encoder import one_hot_encode
 
 
 class Pipeline:
@@ -17,8 +18,10 @@ class Pipeline:
 
         # Clean
         df = fill_missing(df)
+        df = one_hot_encode(df, exclude_cols=[self.target_col])
+        print(df.head())
 
-        X = df.drop(self.target_col, axis=1).values
+        X = df.drop(self.target_col, axis=1).to_numpy()
         y = df[self.target_col].values.reshape(-1, 1)
         X_scaled, means, stds = fit_transform(X)
 
