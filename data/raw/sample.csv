@@ -1,6 +1,6 @@
-x1,x2,y
-1,2,0
-2,3,0
-3,4,1
-4,5,1
-5,6,1
+age,income,city,owns_house,y
+25,50000,London,yes,0
+30,60000,London,no,0
+35,80000,Delhi,yes,1
+40,90000,Delhi,yes,1
+45,120000,NY,no,1
